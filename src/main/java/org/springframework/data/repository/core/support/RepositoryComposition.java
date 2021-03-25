@@ -316,8 +316,12 @@ public class RepositoryComposition {
 	public void validateImplementation() {
 
 		fragments.stream().forEach(it -> it.getImplementation() //
-				.orElseThrow(() -> new IllegalStateException(String.format("Fragment %s has no implementation.",
-						ClassUtils.getQualifiedName(it.getSignatureContributor())))));
+				.orElseThrow(() -> {
+					Class<?> repositoryInterface = metadata != null ? metadata.getRepositoryInterface() : Object.class;
+					return new FragmentNotImplementedException(String.format("Fragment %s used in %s has no implementation.",
+							ClassUtils.getQualifiedName(it.getSignatureContributor()),
+							ClassUtils.getQualifiedName(repositoryInterface)), repositoryInterface, it);
+				}));
 	}
 
 	/*
@@ -506,11 +510,13 @@ public class RepositoryComposition {
 		Object invoke(Class<?> repositoryInterface, RepositoryInvocationMulticaster listener, Method invokedMethod,
 				Method methodToCall, Object[] args) throws Throwable {
 
-			RepositoryFragment<?> fragment = fragmentCache.computeIfAbsent(methodToCall, this::findImplementationFragment);
+			RepositoryFragment<?> fragment = fragmentCache.computeIfAbsent(methodToCall,
+					key -> findImplementationFragment(key, repositoryInterface));
 			Optional<?> optional = fragment.getImplementation();
 
 			if (!optional.isPresent()) {
-				throw new IllegalArgumentException(String.format("No implementation found for method %s", methodToCall));
+				throw new FragmentNotImplementedException(String.format("No implementation found for method %s", methodToCall),
+						repositoryInterface, fragment);
 			}
 
 			RepositoryMethodInvoker repositoryMethodInvoker = invocationMetadataCache.get(invokedMethod);
@@ -525,12 +531,13 @@ public class RepositoryComposition {
 			return repositoryMethodInvoker.invoke(repositoryInterface, listener, args);
 		}
 
-		private RepositoryFragment<?> findImplementationFragment(Method key) {
+		private RepositoryFragment<?> findImplementationFragment(Method key, Class<?> repositoryInterface) {
 
 			return stream().filter(it -> it.hasMethod(key)) //
 					.filter(it -> it.getImplementation().isPresent()) //
 					.findFirst()
-					.orElseThrow(() -> new IllegalArgumentException(String.format("No fragment found for method %s", key)));
+					.orElseThrow(() -> new MissingFragmentException(String.format("No fragment found for method %s", key),
+							repositoryInterface));
 		}
 
 		@Nullable

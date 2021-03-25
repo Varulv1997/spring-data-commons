@@ -51,6 +51,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.RepositoryDefinition;
@@ -61,6 +62,8 @@ import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryComposition.RepositoryFragments;
 import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener.RepositoryMethodInvocation;
 import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener.RepositoryMethodInvocationResult.State;
+import org.springframework.data.repository.query.QueryByExampleExecutor;
+import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.sample.User;
 import org.springframework.lang.Nullable;
@@ -422,6 +425,30 @@ class RepositoryFactorySupportUnitTests {
 		orderedInvocation.verify(startup).start("spring.data.repository.proxy");
 	}
 
+	@Test // GH-2341
+	void dummyRepositoryShouldsupportQuerydsl() {
+		factory.getRepository(WithQuerydsl.class, backingRepo);
+	}
+
+	@Test // GH-2341
+	void dummyRepositoryNotSupportingReactiveQuerydslShouldRaiseException() {
+		assertThatThrownBy(() -> factory.getRepository(WithReactiveQuerydsl.class, backingRepo))
+				.isInstanceOf(UnsupportedFragmentException.class).hasMessage(
+						"Repository org.springframework.data.repository.core.support.RepositoryFactorySupportUnitTests$WithReactiveQuerydsl implements org.springframework.data.repository.query.ReactiveQueryByExampleExecutor but DummyRepositoryFactory does not support Reactive Query by Example!");
+	}
+
+	@Test // GH-2341
+	void dummyRepositoryNotSupportingQbeShouldRaiseException() {
+		assertThatThrownBy(() -> factory.getRepository(WithQbe.class, backingRepo))
+				.hasMessageContaining("does not support Query by Example");
+	}
+
+	@Test // GH-2341
+	void dummyRepositoryNotSupportingReactiveQbeShouldRaiseException() {
+		assertThatThrownBy(() -> factory.getRepository(WithReactiveQbe.class, backingRepo))
+				.hasMessageContaining("does not support Reactive Query by Example");
+	}
+
 	private ConvertingRepository prepareConvertingRepository(final Object expectedValue) {
 
 		when(factory.queryOne.execute(any(Object[].class))).then(invocation -> {
@@ -542,5 +569,21 @@ class RepositoryFactorySupportUnitTests {
 	static class CustomRepositoryBaseClass {
 
 		CustomRepositoryBaseClass(EntityInformation<?, ?> information) {}
+	}
+
+	interface WithQuerydsl extends Repository<Object, Long>, QuerydslPredicateExecutor<Object> {
+
+	}
+
+	interface WithReactiveQuerydsl extends Repository<Object, Long>, ReactiveQueryByExampleExecutor<Object> {
+
+	}
+
+	interface WithQbe extends Repository<Object, Long>, QueryByExampleExecutor<Object> {
+
+	}
+
+	interface WithReactiveQbe extends Repository<Object, Long>, ReactiveQueryByExampleExecutor<Object> {
+
 	}
 }
