@@ -15,6 +15,8 @@
  */
 package org.springframework.data.repository.core.support;
 
+import org.springframework.data.repository.core.RepositoryException;
+
 /**
  * Exception thrown during repository creation or repository method invocation when invoking a repository method on a
  * fragment without an implementation.

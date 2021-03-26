@@ -15,6 +15,8 @@
  */
 package org.springframework.data.repository.core.support;
 
+import org.springframework.data.repository.core.RepositoryException;
+
 /**
  * Exception thrown during repository creation when a well-known fragment interface is not supported by the repository
  * factory.

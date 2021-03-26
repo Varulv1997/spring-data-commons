@@ -15,6 +15,8 @@
  */
 package org.springframework.data.repository.core.support;
 
+import org.springframework.data.repository.core.RepositoryException;
+
 /**
  * Exception thrown during repository creation or repository method invocation when a the repository has custom methods
  * that are not backed by a fragment or if no fragment could be found for a repository method invocation.

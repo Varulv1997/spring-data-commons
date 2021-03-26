@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.repository.core.support;
+package org.springframework.data.repository.core;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 /**
- * Exception thrown in the context of repository creation/invocation.
+ * Exception thrown in the context of repository creation or method invocation.
  *
  * @author Mark Paluch
  * @since 2.5
@@ -29,13 +29,25 @@ public class RepositoryException extends InvalidDataAccessApiUsageException {
 	private final Class<?> repositoryInterface;
 
 	/**
-	 * Constructor for RepositoryCreationException.
+	 * Constructor for RepositoryException.
 	 *
 	 * @param msg the detail message.
 	 * @param repositoryInterface the repository interface.
 	 */
 	public RepositoryException(String msg, Class<?> repositoryInterface) {
 		super(msg);
+		this.repositoryInterface = repositoryInterface;
+	}
+
+	/**
+	 * Constructor for RepositoryException.
+	 *
+	 * @param msg the detail message.
+	 * @param cause the root cause from the data access API in use.
+	 * @param repositoryInterface the repository interface.
+	 */
+	public RepositoryException(String msg, Throwable cause, Class<?> repositoryInterface) {
+		super(msg, cause);
 		this.repositoryInterface = repositoryInterface;
 	}
 
