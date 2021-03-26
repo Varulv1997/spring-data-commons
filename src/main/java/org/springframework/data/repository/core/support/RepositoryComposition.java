@@ -536,7 +536,8 @@ public class RepositoryComposition {
 			return stream().filter(it -> it.hasMethod(key)) //
 					.filter(it -> it.getImplementation().isPresent()) //
 					.findFirst()
-					.orElseThrow(() -> new MissingFragmentException(String.format("No fragment found for method %s", key),
+					.orElseThrow(() -> new IncompleteRepositoryCompositionException(
+							String.format("No fragment found for method %s", key),
 							repositoryInterface));
 		}
 

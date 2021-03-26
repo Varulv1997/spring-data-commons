@@ -23,7 +23,7 @@ package org.springframework.data.repository.core.support;
  * @since 2.5
  */
 @SuppressWarnings("serial")
-public class UnsupportedFragmentException extends RepositoryCreationException {
+public class UnsupportedFragmentException extends RepositoryException {
 
 	private final Class<?> fragmentInterface;
 

@@ -15,22 +15,31 @@
  */
 package org.springframework.data.repository.core.support;
 
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+
 /**
- * Exception thrown during repository creation when a fragment implementation is missing.
+ * Exception thrown in the context of repository creation/invocation.
  *
  * @author Mark Paluch
  * @since 2.5
  */
 @SuppressWarnings("serial")
-public class MissingFragmentException extends RepositoryCreationException {
+public class RepositoryException extends InvalidDataAccessApiUsageException {
+
+	private final Class<?> repositoryInterface;
 
 	/**
-	 * Constructor for MissingFragmentException.
+	 * Constructor for RepositoryCreationException.
 	 *
 	 * @param msg the detail message.
 	 * @param repositoryInterface the repository interface.
 	 */
-	public MissingFragmentException(String msg, Class<?> repositoryInterface) {
-		super(msg, repositoryInterface);
+	public RepositoryException(String msg, Class<?> repositoryInterface) {
+		super(msg);
+		this.repositoryInterface = repositoryInterface;
+	}
+
+	public Class<?> getRepositoryInterface() {
+		return repositoryInterface;
 	}
 }

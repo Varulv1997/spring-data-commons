@@ -15,31 +15,23 @@
  */
 package org.springframework.data.repository.core.support;
 
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-
 /**
- * Exception thrown when the repository instance cannot be created.
+ * Exception thrown during repository creation or repository method invocation when a the repository has custom methods
+ * that are not backed by a fragment or if no fragment could be found for a repository method invocation.
  *
  * @author Mark Paluch
  * @since 2.5
  */
 @SuppressWarnings("serial")
-public class RepositoryCreationException extends InvalidDataAccessApiUsageException {
-
-	private final Class<?> repositoryInterface;
+public class IncompleteRepositoryCompositionException extends RepositoryException {
 
 	/**
-	 * Constructor for RepositoryCreationException.
+	 * Constructor for IncompleteRepositoryCompositionException.
 	 *
 	 * @param msg the detail message.
 	 * @param repositoryInterface the repository interface.
 	 */
-	public RepositoryCreationException(String msg, Class<?> repositoryInterface) {
-		super(msg);
-		this.repositoryInterface = repositoryInterface;
-	}
-
-	public Class<?> getRepositoryInterface() {
-		return repositoryInterface;
+	public IncompleteRepositoryCompositionException(String msg, Class<?> repositoryInterface) {
+		super(msg, repositoryInterface);
 	}
 }

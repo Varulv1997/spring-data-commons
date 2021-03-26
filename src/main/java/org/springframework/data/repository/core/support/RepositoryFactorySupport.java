@@ -758,7 +758,7 @@ public abstract class RepositoryFactorySupport implements BeanClassLoaderAware, 
 
 				if (composition.isEmpty()) {
 
-					throw new MissingFragmentException(
+					throw new IncompleteRepositoryCompositionException(
 							String.format("You have custom methods in %s but have not provided a custom implementation!",
 									org.springframework.util.ClassUtils.getQualifiedName(repositoryInterface)),
 							repositoryInterface);

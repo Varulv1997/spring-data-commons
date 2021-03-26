@@ -16,13 +16,14 @@
 package org.springframework.data.repository.core.support;
 
 /**
- * Exception thrown when a fragment remains with without an implementation during repository creation.
+ * Exception thrown during repository creation or repository method invocation when invoking a repository method on a
+ * fragment without an implementation.
  *
  * @author Mark Paluch
  * @since 2.5
  */
 @SuppressWarnings("serial")
-public class FragmentNotImplementedException extends RepositoryCreationException {
+public class FragmentNotImplementedException extends RepositoryException {
 
 	private final RepositoryFragment<?> fragment;
 
